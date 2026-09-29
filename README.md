@@ -12,6 +12,21 @@ website can read it or embed it in an iframe. The extension reads the portal whe
 you are already signed in; the web app receives that record by paste, bridge, sync
 link or file, and works offline from there.
 
+**Live app:** https://abdulmanan69.github.io/umt-portal/
+
+### Install it on your phone
+
+1. Open the link above in **Chrome** (Android) or **Safari** (iPhone).
+2. Android: tap the menu, then **Install app** or **Add to Home screen**.
+   iPhone: tap Share, then **Add to Home Screen**.
+3. Open it from the home screen, choose **Paste from the portal**, and follow the
+   three steps on screen.
+4. Settings, then **Remind me before class**, and allow notifications.
+
+Installed on Android, the app can also wake in the background to remind you. On
+iPhone reminders arrive while the app is open, which is a limit of the platform,
+not of this app.
+
 ---
 
 ## The extension

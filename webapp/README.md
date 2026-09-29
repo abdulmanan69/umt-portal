@@ -1,5 +1,7 @@
 # UMT Companion
 
+**Live:** https://abdulmanan69.github.io/umt-portal/
+
 A static, offline-first web app for your UMT timetable, class reminders and academic
 record. TypeScript, no framework, no backend. It builds to plain files and runs on
 GitHub Pages.
@@ -57,6 +59,17 @@ npm run preview
 
 `npm run build` will not produce a bundle unless the type check and the parser
 checks both pass, so a broken paste parser cannot reach Pages.
+
+## Installing it
+
+Open the live link, then:
+
+- **Android / Chrome:** menu, then *Install app*.
+- **iPhone / Safari:** Share, then *Add to Home Screen*.
+- **Desktop Chrome or Edge:** the install icon in the address bar.
+
+Everything below the install is offline: the app opens with no network at all,
+and your record never leaves the device.
 
 ## Publishing to GitHub Pages
 
