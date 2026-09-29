@@ -89,6 +89,11 @@ async function getState() {
 }
 
 self.addEventListener('message', (event) => {
+  /* the page asks for a sweep when it comes back into view */
+  if (event.data?.type === 'umt:check') {
+    event.waitUntil(checkClasses());
+    return;
+  }
   if (event.data?.type === 'umt:schedule') {
     event.waitUntil((async () => {
       const previous = (await getState()) || {};
@@ -115,22 +120,135 @@ function formatClock(minutes) {
   return h + ':' + String(m).padStart(2, '0') + suffix;
 }
 
+const TINTS = ['#F59B1C', '#4CC9F0', '#34D399', '#A78BFA', '#FB7185', '#38BDF8', '#FBBF24'];
+
+function courseTint(code) {
+  let n = 0;
+  for (let i = 0; i < code.length; i++) n = (n * 31 + code.charCodeAt(i)) % 9973;
+  return TINTS[n % TINTS.length];
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+async function blobToDataUrl(blob) {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return 'data:image/jpeg;base64,' + btoa(binary);
+}
+
+/* The page paints a banner when reminders are armed, but a background wake-up can
+   arrive late. Redrawing here keeps the number on the card honest. */
+async function paintBanner(slot, left) {
+  if (typeof OffscreenCanvas === 'undefined') return null;
+  try {
+    const W = 1024, H = 512;
+    const canvas = new OffscreenCanvas(W, H);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    const tint = courseTint(slot.code);
+
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, '#131B30');
+    bg.addColorStop(1, '#0B1120');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const glow = ctx.createRadialGradient(W * 0.86, H * 0.2, 20, W * 0.86, H * 0.2, 520);
+    glow.addColorStop(0, tint + '33');
+    glow.addColorStop(1, '#0B112000');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = tint;
+    ctx.fillRect(0, 0, 14, H);
+
+    const started = left < 0;
+    const big = started ? String(Math.abs(left)) : left === 0 ? 'NOW' : left < 60 ? String(left) : Math.floor(left / 60) + 'h';
+    const unit = started ? 'minutes ago' : left === 0 ? 'starting' : left < 60 ? 'minutes away' : 'away';
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = tint;
+    ctx.font = '700 168px "Segoe UI", system-ui, sans-serif';
+    ctx.fillText(big, W - 64, 232);
+    ctx.fillStyle = '#AFBBD8';
+    ctx.font = '500 30px "Segoe UI", system-ui, sans-serif';
+    ctx.fillText(unit, W - 64, 282);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = tint;
+    ctx.font = '600 34px "Cascadia Mono", Consolas, monospace';
+    ctx.fillText(slot.code, 64, 112);
+
+    let nameSize = 62;
+    ctx.font = '600 ' + nameSize + 'px "Segoe UI", system-ui, sans-serif';
+    while (nameSize > 34 && ctx.measureText(slot.name).width > W - 420) {
+      nameSize -= 2;
+      ctx.font = '600 ' + nameSize + 'px "Segoe UI", system-ui, sans-serif';
+    }
+    ctx.fillStyle = '#F1F5FF';
+    ctx.fillText(slot.name, 64, 190);
+
+    const chips = [formatClock(slot.startMinutes) + ' to ' + formatClock(slot.endMinutes)];
+    chips.push(slot.room ? slot.room : 'Room to be announced');
+    let x = 64;
+    const y = H - 132;
+    ctx.font = '500 26px "Segoe UI", system-ui, sans-serif';
+    for (const chip of chips) {
+      const w = ctx.measureText(chip).width + 44;
+      ctx.fillStyle = '#1E2846';
+      roundRect(ctx, x, y, w, 60, 30);
+      ctx.fill();
+      ctx.strokeStyle = '#2C3860';
+      ctx.lineWidth = 2;
+      roundRect(ctx, x, y, w, 60, 30);
+      ctx.stroke();
+      ctx.fillStyle = '#D7E0F5';
+      ctx.fillText(chip, x + 22, y + 39);
+      x += w + 14;
+    }
+
+    const blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: 0.84 });
+    return await blobToDataUrl(blob);
+  } catch (e) {
+    return null;
+  }
+}
+
 function baseOf(state) {
   return (state && state.base) ? state.base.replace(/\/$/, '') : '.';
 }
 
 /* The same card the page would raise, rebuilt from what it handed over. */
-function notificationFor(slot, left, state) {
+/* Built at the moment it fires, so the minutes on the card are the real ones. */
+async function notificationFor(slot, left, state) {
   const urgent = left <= 5;
   const base = baseOf(state);
+  const when = left > 0
+    ? 'In ' + left + ' min, at ' + formatClock(slot.startMinutes)
+    : left === 0
+      ? 'Starting now, ' + formatClock(slot.startMinutes) + ' to ' + formatClock(slot.endMinutes)
+      : 'Started ' + Math.abs(left) + ' min ago, at ' + formatClock(slot.startMinutes);
+  const body = when + '  .  ' + (slot.room ? 'Room ' + slot.room : 'Room not listed');
+  const image = (await paintBanner(slot, left)) || slot.image || undefined;
   return {
     title: slot.code + '  .  ' + slot.name,
     options: {
-      body: slot.body || (formatClock(slot.startMinutes) + (slot.room ? ' in ' + slot.room : '') +
-        (left > 0 ? ', in ' + left + ' min' : ', starting now')),
+      body: body,
       icon: base + '/icons/icon-192.png',
       badge: base + '/icons/badge-72.png',
-      image: slot.image || undefined,
+      image: image,
       tag: slot.code + '@' + slot.day + '@' + slot.startMinutes,
       renotify: true,
       requireInteraction: urgent,
@@ -164,7 +282,7 @@ async function checkClasses() {
     changed = true;
     const slot = state.classes.find((c) => c.code === entry.code && c.startMinutes === entry.startMinutes && c.day === entry.day);
     if (!slot) continue;
-    const card = notificationFor(slot, Math.max(0, slot.startMinutes - minutesNow), state);
+    const card = await notificationFor(slot, slot.startMinutes - minutesNow, state);
     await self.registration.showNotification(card.title, card.options);
   }
 
@@ -177,7 +295,7 @@ async function checkClasses() {
     if (sent.has(key)) continue;
     sent.add(key);
     changed = true;
-    const card = notificationFor(slot, Math.max(0, slot.startMinutes - minutesNow), state);
+    const card = await notificationFor(slot, slot.startMinutes - minutesNow, state);
     await self.registration.showNotification(card.title, card.options);
   }
 

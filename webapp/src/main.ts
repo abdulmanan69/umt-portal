@@ -61,6 +61,10 @@ async function start(): Promise<void> {
     if (document.visibilityState === 'visible' && store.settings.notificationsEnabled) {
       scheduleReminders(store.snapshot?.schedule?.classes ?? []);
       shell.refresh();
+      /* catch anything that fell due while this was in the background */
+      void navigator.serviceWorker?.getRegistration().then((reg) => {
+        (reg?.active ?? null)?.postMessage({ type: 'umt:check' });
+      });
     }
   });
 

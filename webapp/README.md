@@ -63,9 +63,13 @@ Settings lets you change the warning time, mute individual days, and send a test
 - **Body:** how long you have, the start time, the room, which class of the day it
   is, and what follows it.
 - **Picture:** a wide card drawn in the app's own colours, with the countdown set
-  large. Android shows it under the notification; it is about 34 KB of JPEG, drawn
-  when reminders are armed and handed to the service worker so a background
-  reminder looks the same as one raised by the page.
+  large. Android shows it under the notification; it is about 34 KB of JPEG.
+- **The number is always the real one.** Whatever warning you choose is what the
+  body and the picture say: set two minutes and the card reads "In 2 min" with a
+  large 2. A background wake-up can arrive late, so the service worker redraws the
+  card at the moment it fires rather than reusing the one painted earlier. A
+  reminder that lands after the class began says "Started 7 min ago" and shows a
+  7, instead of insisting the class is still to come.
 - **Buttons:** *Open timetable* and *Remind in 5 min*.
 - **Urgency:** inside five minutes a reminder vibrates harder and stays on screen
   until it is dealt with.
