@@ -14,6 +14,9 @@ link or file, and works offline from there.
 
 **Live app:** https://abdulmanan69.github.io/umt-portal/
 
+**Walkthrough:** [`video/umt-companion-demo.mp4`](video/umt-companion-demo.mp4) - a
+minute from first open to a class reminder.
+
 ### Install it on your phone
 
 1. Open the link above in **Chrome** (Android) or **Safari** (iPhone).

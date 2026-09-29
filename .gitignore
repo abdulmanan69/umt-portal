@@ -16,3 +16,9 @@ screenshots/
 Thumbs.db
 .vscode/
 .idea/
+
+# raw recordings and inspection stills; only the finished mp4 is kept
+video2/
+*.webm
+video/frame_*.jpg
+video/check_*.jpg
