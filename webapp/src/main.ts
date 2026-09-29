@@ -12,6 +12,7 @@ import { renderClassEditor } from './views/paste';
 import { readSyncLink } from './core/sync';
 import { scheduleReminders } from './core/notifications';
 import { showClassAlert } from './ui/alert';
+import { playSound, unlockAudio } from './core/sound';
 
 const root = document.getElementById('app');
 if (!root) throw new Error('The app needs a #app element to mount into.');
@@ -53,8 +54,19 @@ async function start(): Promise<void> {
   /* A reminder that lands while the app is on screen gets the animated card too. */
   window.addEventListener('umt:reminder', (event) => {
     const detail = (event as CustomEvent).detail as { slot: Parameters<typeof showClassAlert>[0]; start: Date };
-    if (detail?.slot) showClassAlert(detail.slot, detail.start);
+    if (!detail?.slot) return;
+    showClassAlert(detail.slot, detail.start);
+    playSound(store.settings.sound);
   });
+
+  /* browsers stay silent until the person has interacted with the page */
+  const unlock = () => {
+    unlockAudio();
+    document.removeEventListener('pointerdown', unlock);
+    document.removeEventListener('keydown', unlock);
+  };
+  document.addEventListener('pointerdown', unlock);
+  document.addEventListener('keydown', unlock);
 
   /* Re-arm when the tab comes back, since timers do not survive a sleep. */
   document.addEventListener('visibilitychange', () => {

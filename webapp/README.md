@@ -71,6 +71,11 @@ Settings lets you change the warning time, mute individual days, and send a test
   reminder that lands after the class began says "Started 7 min ago" and shows a
   7, instead of insisting the class is still to come.
 - **Buttons:** *Open timetable* and *Remind in 5 min*.
+- **Tone:** six to choose from in Settings, played by the app when a reminder lands
+  while it is open. They are synthesised with the Web Audio API, so there are no
+  audio files to download and they work offline. A notification raised by the phone
+  while the app is closed plays whatever your notification settings say; no web app
+  is allowed to override that.
 - **Urgency:** inside five minutes a reminder vibrates harder and stays on screen
   until it is dealt with.
 - **On screen:** if the app is open when a reminder fires, an animated card slides

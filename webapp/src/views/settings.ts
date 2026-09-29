@@ -10,6 +10,7 @@ import {
   buildSyncLink, downloadSnapshot, extensionPresent, forSyncLink, listenForExtension, readSnapshotFile
 } from '../core/sync';
 import { WEEKDAYS, type Weekday } from '../core/types';
+import { SOUNDS, playSound, unlockAudio, type SoundName } from '../core/sound';
 import { applyTheme } from '../app/theme';
 import { navigate } from '../app/router';
 
@@ -117,11 +118,40 @@ function notificationsCard(refresh: Refresh): HTMLElement {
       ]),
       dayChips
     ]),
+    el('div', { class: 'setting stacked' }, [
+      el('div', { class: 'setting-info' }, [
+        el('b', { text: 'Tone' }),
+        el('small', { text: 'Played by the app itself. Tap one to hear it.' })
+      ]),
+      soundPicker(refresh)
+    ]),
     el('p', {
       class: 'hint',
-      text: 'While this app is open, reminders fire exactly on time. Install it to your home screen and Chrome can also wake it in the background; other browsers will only remind you while it is open.'
+      text: 'While this app is open, reminders fire exactly on time and play the tone above. Installed to your home screen, Chrome can also wake it in the background, where the phone decides the sound from your notification settings.'
     })
   ]);
+}
+
+function soundPicker(refresh: Refresh): HTMLElement {
+  const current = store.settings.sound;
+  return el('div', { class: 'tones' }, SOUNDS.map((choice) => {
+    const node = el('button', {
+      class: 'tone',
+      type: 'button',
+      'aria-pressed': String(choice.id === current),
+      title: choice.note
+    }, [
+      el('b', { text: choice.label }),
+      el('small', { text: choice.note })
+    ]);
+    node.addEventListener('click', () => {
+      unlockAudio();
+      store.saveSettings({ sound: choice.id as SoundName });
+      playSound(choice.id);
+      refresh();
+    });
+    return node;
+  }));
 }
 
 function dataCard(refresh: Refresh): HTMLElement {

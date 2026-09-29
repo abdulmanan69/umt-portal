@@ -101,6 +101,8 @@ export interface Snapshot {
 
 export interface Settings {
   theme: 'dark' | 'light';
+  /** The tone the app plays when a reminder lands while it is open. */
+  sound: import('./sound').SoundName;
   /** Minutes of warning before a class starts. */
   leadMinutes: number;
   notificationsEnabled: boolean;
@@ -111,6 +113,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
+  sound: 'chime',
   leadMinutes: 15,
   notificationsEnabled: false,
   mutedDays: [],

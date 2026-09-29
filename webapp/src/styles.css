@@ -479,3 +479,18 @@ option { background: var(--surface); color: var(--text); }
   font: 500 11.5px/1 var(--sans); color: var(--text-2);
 }
 @keyframes alert-in { from { opacity: 0; transform: translateY(10px); } }
+
+/* ---- tone picker ---------------------------------------------------------- */
+.setting.stacked { flex-direction: column; align-items: stretch; gap: 12px; }
+.tones { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.tone {
+  display: grid; gap: 3px; padding: 11px 13px; cursor: pointer; text-align: left;
+  border-radius: var(--r-sm); border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--text);
+  transition: border-color .15s var(--ease), background .15s var(--ease), transform .12s;
+}
+.tone:hover { background: var(--surface-3); transform: translateY(-1px); }
+.tone b { font: 600 13px/1.2 var(--sans); }
+.tone small { font-size: 11px; color: var(--text-3); }
+.tone[aria-pressed='true'] { border-color: var(--brand); background: var(--brand-soft); }
+.tone[aria-pressed='true'] b { color: var(--brand); }
