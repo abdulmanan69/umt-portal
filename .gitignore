@@ -1,0 +1,18 @@
+# dependencies and build output
+node_modules/
+dist/
+*.local
+
+# Screenshots of the live portal: these hold a real transcript, CGPA, payment
+# amounts and a student ID. Kept out of the repository on purpose. Delete this
+# line only if you mean to publish them.
+screenshots/
+
+# scratch output from browser automation
+.playwright-mcp/
+
+# editor and OS noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

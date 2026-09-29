@@ -1,0 +1,37 @@
+{
+  "name": "umt-companion",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A static, offline-first companion for the UMT Student Portal: timetable, class reminders and academic record.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && tsx test/parse.check.ts && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx test/parse.check.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/qrcode": "^1.5.6",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "tsx": "^4.19.2"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "author": "Abdul Manan",
+  "license": "MIT",
+  "contributors": [
+    "Abdul Manan"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abdulmanan69/umt-portal.git"
+  },
+  "homepage": "https://abdulmanan69.github.io/umt-portal/",
+  "bugs": {
+    "url": "https://github.com/abdulmanan69/umt-portal/issues"
+  }
+}

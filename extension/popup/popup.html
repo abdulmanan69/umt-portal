@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UMT Portal</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <span class="mark">U</span>
+    <div class="who">
+      <b id="name">UMT Portal</b>
+      <small id="id">Reimagined</small>
+    </div>
+    <button id="theme" class="icon" type="button" title="Switch theme" aria-label="Switch theme">&#9681;</button>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><small>CGPA</small><b id="cgpa">--</b></div>
+    <div class="stat"><small>Credits</small><b id="credits">--</b></div>
+    <div class="stat"><small>Semesters</small><b id="sems">--</b></div>
+  </section>
+
+  <section class="ages">
+    <div class="age"><span>Academic record</span><b id="t-age">not loaded yet</b></div>
+    <div class="age"><span>Payments <i id="paid"></i></span><b id="p-age">not loaded yet</b></div>
+  </section>
+
+  <button id="refresh" class="refresh" type="button">Refresh now</button>
+  <button id="send" class="refresh ghost" type="button">Send to web app</button>
+  <p class="note">Records are kept on this machine and only re-read when you ask.</p>
+
+  <nav class="links">
+    <a href="https://online.umt.edu.pk/Home/Index" data-go>Dashboard</a>
+    <a href="https://online.umt.edu.pk/Transcript" data-go>Transcript</a>
+    <a href="https://online.umt.edu.pk/Attendance" data-go>Attendance</a>
+    <a href="https://online.umt.edu.pk/Payment" data-go>Payments</a>
+    <a href="https://online.umt.edu.pk/ManageRequests/getAllRequests" data-go>Requests</a>
+    <a href="https://lms.umt.edu.pk/login/index.php" data-go>LMS</a>
+  </nav>
+
+  <footer class="foot"><span>Ctrl K opens search inside the portal</span></footer>
+  <script src="popup.js"></script>
+</body>
+</html>
