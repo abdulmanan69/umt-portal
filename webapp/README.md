@@ -33,6 +33,16 @@ So your record comes across by other means, and then lives on your device:
 Sign-in here is a passcode that locks this device. It is not portal authentication
 and does not pretend to be.
 
+## Setting it up
+
+Three steps, and the first one is a single button:
+
+1. **Get your timetable in.** Copy the table on the portal dashboard, then press
+   *Paste from clipboard*. A sample timetable, the extension, a sync link and an
+   exported file all sit behind *Other ways in*.
+2. **Allow reminders**, and pick how much warning you want.
+3. **Install it** to the home screen, with the instructions that match your device.
+
 ## Class reminders
 
 The timetable already carries start times, so the app schedules a notification a
@@ -46,6 +56,22 @@ set number of minutes before each class. What that means in practice:
   server.
 
 Settings lets you change the warning time, mute individual days, and send a test.
+
+### What a reminder looks like
+
+- **Title:** the course code and name.
+- **Body:** how long you have, the start time, the room, which class of the day it
+  is, and what follows it.
+- **Picture:** a wide card drawn in the app's own colours, with the countdown set
+  large. Android shows it under the notification; it is about 34 KB of JPEG, drawn
+  when reminders are armed and handed to the service worker so a background
+  reminder looks the same as one raised by the page.
+- **Buttons:** *Open timetable* and *Remind in 5 min*.
+- **Urgency:** inside five minutes a reminder vibrates harder and stays on screen
+  until it is dealt with.
+- **On screen:** if the app is open when a reminder fires, an animated card slides
+  up with a ring that drains as the minutes go. An OS notification is drawn by the
+  operating system and cannot be animated by a web app; this is the part that can.
 
 ## Running it
 

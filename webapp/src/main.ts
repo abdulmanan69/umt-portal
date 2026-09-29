@@ -1,17 +1,17 @@
 import './styles.css';
-import { el } from './ui/dom';
 import { toast } from './ui/components';
 import { store } from './core/store';
 import { applyTheme } from './app/theme';
 import { createShell } from './app/shell';
 import { defineRoutes } from './app/router';
-import { renderGate } from './views/gate';
+import { renderSetup } from './views/setup';
 import { renderToday } from './views/today';
 import { renderFees, renderRecord, renderWeek } from './views/week';
 import { renderSettings } from './views/settings';
 import { renderClassEditor } from './views/paste';
 import { readSyncLink } from './core/sync';
 import { scheduleReminders } from './core/notifications';
+import { showClassAlert } from './ui/alert';
 
 const root = document.getElementById('app');
 if (!root) throw new Error('The app needs a #app element to mount into.');
@@ -39,7 +39,7 @@ async function boot(): Promise<void> {
   }
 
   if (!store.hasData || !store.isUnlocked) {
-    root!.replaceChildren(renderGate(() => { void start(); }));
+    root!.replaceChildren(renderSetup(() => { void start(); }));
     return;
   }
   await start();
@@ -49,6 +49,12 @@ async function start(): Promise<void> {
   shell.mount(root!);
   const classes = store.snapshot?.schedule?.classes ?? [];
   if (store.settings.notificationsEnabled) scheduleReminders(classes);
+
+  /* A reminder that lands while the app is on screen gets the animated card too. */
+  window.addEventListener('umt:reminder', (event) => {
+    const detail = (event as CustomEvent).detail as { slot: Parameters<typeof showClassAlert>[0]; start: Date };
+    if (detail?.slot) showClassAlert(detail.slot, detail.start);
+  });
 
   /* Re-arm when the tab comes back, since timers do not survive a sleep. */
   document.addEventListener('visibilitychange', () => {
@@ -89,26 +95,4 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-let installPrompt: Event | null = null;
-window.addEventListener('beforeinstallprompt', (event) => {
-  event.preventDefault();
-  installPrompt = event;
-  const bar = el('div', { class: 'toast good' }, [
-    el('span', { text: 'Add this to your home screen for reminders' }),
-    (() => {
-      const b = el('button', { class: 'btn primary', text: 'Install' });
-      b.addEventListener('click', async () => {
-        bar.remove();
-        await (installPrompt as unknown as { prompt(): Promise<void> })?.prompt();
-        installPrompt = null;
-      });
-      return b;
-    })()
-  ]);
-  let host = document.querySelector('.toasts');
-  if (!host) {
-    host = el('div', { class: 'toasts' });
-    document.body.appendChild(host);
-  }
-  host.appendChild(bar);
-});
+/* The install prompt is captured in views/setup.ts, where it is offered in context. */

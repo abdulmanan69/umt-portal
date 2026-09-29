@@ -381,3 +381,101 @@ option { background: var(--surface); color: var(--text); }
 .steps li { margin: 4px 0; }
 .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0 14px; align-items: end; }
 .grid-form .actions { grid-column: 1 / -1; margin-top: 4px; }
+
+/* ---- the in-app class alert --------------------------------------------- */
+.class-alert {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 950;
+  width: min(430px, calc(100vw - 28px));
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--course, var(--brand));
+  background: var(--surface);
+  box-shadow: var(--shadow-3), 0 0 0 1px color-mix(in srgb, var(--course, var(--brand)) 22%, transparent);
+  transform: translate(-50%, 140%);
+  opacity: 0;
+  transition: transform .5s var(--ease), opacity .35s var(--ease);
+}
+.class-alert[data-open='1'] { transform: translate(-50%, 0); opacity: 1; }
+.class-alert::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--course, var(--brand)) 16%, transparent), transparent 60%);
+  pointer-events: none;
+}
+.alert-dial { position: relative; width: 62px; height: 62px; display: grid; place-items: center; }
+.alert-ring { position: absolute; inset: 0; transform: rotate(-90deg); }
+.alert-ring .track { stroke: var(--surface-3); }
+.alert-ring .fill {
+  stroke-dasharray: 188.5;
+  stroke-dashoffset: calc(188.5 * (1 - var(--progress, 1)));
+  transition: stroke-dashoffset 1s linear;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--course, var(--brand)) 60%, transparent));
+}
+.alert-count { font: 600 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+.alert-dial small { position: absolute; bottom: 4px; font: 500 8px/1 var(--mono); color: var(--text-3); letter-spacing: .1em; }
+.alert-body { min-width: 0; display: grid; gap: 2px; }
+.alert-eyebrow { font: 500 9.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--course, var(--brand)); }
+.alert-body b { font: 600 14px/1.3 var(--sans); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alert-body small { font: 400 11.5px/1.3 var(--mono); color: var(--text-3); }
+.alert-close {
+  width: 34px; height: 34px; flex: none; cursor: pointer;
+  display: grid; place-items: center;
+  border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--text-2);
+}
+.alert-close:hover { background: var(--surface-3); color: var(--text); }
+@media (max-width: 960px) { .class-alert { bottom: 92px; } }
+
+/* ---- setup wizard --------------------------------------------------------- */
+.dots { display: flex; justify-content: center; gap: 8px; margin: 0 0 20px; }
+.dots i { width: 28px; height: 4px; border-radius: 99px; background: var(--surface-3); transition: background .25s var(--ease); }
+.dots i.on { background: var(--brand); }
+.dots i.done { background: color-mix(in srgb, var(--brand) 45%, var(--surface-3)); }
+.gate-card h1 { text-align: center; font: 600 24px/1.2 var(--display); margin-bottom: 8px; }
+.gate-card .lede { margin: 0 0 22px; text-align: center; color: var(--text-3); font-size: 13.5px; }
+.actions.stack { display: grid; gap: 10px; }
+.actions.stack .btn { width: 100%; justify-content: center; }
+.ready {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 12px 14px; margin-top: 4px;
+  border-radius: var(--r-sm); border: 1px solid var(--good);
+  background: var(--good-soft); color: var(--good); font-size: 13px;
+}
+.ready .btn { margin-left: auto; }
+.more { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+.more summary { cursor: pointer; font-size: 13px; color: var(--text-2); list-style: none; }
+.more summary::-webkit-details-marker { display: none; }
+.more summary::before { content: '+ '; color: var(--text-3); }
+.more[open] summary::before { content: '- '; }
+.more .actions { margin-top: 12px; }
+
+/* a mock of the notification, so the promise is visible before allowing it */
+.preview-card {
+  position: relative;
+  display: grid; gap: 4px;
+  padding: 16px 18px; margin: 0 0 18px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--brand-line);
+  background: linear-gradient(140deg, var(--brand-soft), transparent 70%), var(--surface-2);
+  animation: alert-in .5s var(--ease);
+}
+.preview-card.plain { border-color: var(--line); background: var(--surface-2); }
+.preview-eyebrow { font: 500 9.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--brand); }
+.preview-card b { font: 600 14px/1.35 var(--sans); }
+.preview-card small { font: 400 12px/1.4 var(--mono); color: var(--text-2); }
+.preview-actions { display: flex; gap: 8px; margin-top: 10px; }
+.preview-actions span {
+  flex: 1; text-align: center; padding: 8px 10px;
+  border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
+  font: 500 11.5px/1 var(--sans); color: var(--text-2);
+}
+@keyframes alert-in { from { opacity: 0; transform: translateY(10px); } }

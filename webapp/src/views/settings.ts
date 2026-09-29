@@ -104,7 +104,7 @@ function notificationsCard(refresh: Refresh): HTMLElement {
       button('Send a test', {
         iconName: 'bell',
         onClick: () => {
-          void sendTestNotification().then((ok) => { if (!ok) toast('Turn reminders on first.', 'bad'); });
+          void sendTestNotification(classes).then((ok) => { if (!ok) toast('Turn reminders on first.', 'bad'); });
         }
       })
     ]),
